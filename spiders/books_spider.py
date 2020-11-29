@@ -1,4 +1,5 @@
 import scrapy
+from ..items import ScrapePracticeItem
 
 class BooksSpider(scrapy.Spider):
 	name = "books"
@@ -7,12 +8,20 @@ class BooksSpider(scrapy.Spider):
 	]
 
 	def parse(self, response):
-		for book_info in response.css('li .product_pod'):
-			yield {
-				'book_title': book_info.css('h3 a::text').get(),
-		    	'book_price': book_info.css('.product_price p::text').get(),
-		    	'book_rating': book_info.xpath('.//p[contains(@class, "star-rating")]/@class').re(r'star-rating(.*)$')
-			}
+
+		items = ScrapePracticeItem()
+
+		for book in response.css('li .product_pod'):
+			title = book.css('h3 a::text').get()
+			price = book.css('.product_price p::text').get()
+			rating = str(book.xpath('.//p[contains(@class, "star-rating")]/@class').re(r'star-rating(.*)$'))
+
+			items['title'] = title
+			items['price'] = price 
+			items['rating'] = rating
+
+			yield items
+
 		next_page = response.css('.next a::attr(href)').get()
 		if next_page is not None:
 			next_page = response.urljoin(next_page)

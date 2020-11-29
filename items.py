@@ -8,5 +8,5 @@ import scrapy
 
 class ScrapePracticeItem(scrapy.Item):
     title = scrapy.Field();
-    author = scrapy.Field();
     price = scrapy.Field();
+    rating = scrapy.Field();
